@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Acceso Seguro NFC</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #000;
+  --vessalin-rojo: #a4271c;
+  --korrath-cyan: #00e5d0;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+
+/* Tarjeta Base */
+.id-card {
+  width: 100%;
+  max-width: 400px;
+  border-radius: 12px;
+  padding: 24px;
+  position: relative;
+  display: none; /* Ocultas por defecto */
+  animation: encendido 1s ease forwards;
+}
+
+@keyframes encendido {
+  0% { opacity: 0; transform: scale(0.95); filter: blur(4px); }
+  100% { opacity: 1; transform: scale(1); filter: blur(0); }
+}
+
+/* Estilo VESSALIN (Rojo, limpio, corporativo) */
+#card-vessalin {
+  background: #f3f4f6;
+  border-top: 8px solid var(--vessalin-rojo);
+  color: #111827;
+  font-family: 'Inter', sans-serif;
+  box-shadow: 0 10px 30px rgba(164, 39, 28, 0.2);
+}
+.v-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e5e7eb; padding-bottom: 16px; margin-bottom: 16px; }
+.v-logo { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 16px; color: var(--vessalin-rojo); }
+.v-logo svg { width: 24px; height: 24px; }
+.v-title { font-size: 22px; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; }
+.v-text { font-size: 14px; color: #4b5563; line-height: 1.6; margin-bottom: 20px; }
+.v-footer { font-family: monospace; font-size: 11px; background: #e5e7eb; padding: 8px; border-radius: 4px; text-align: center; font-weight: bold;}
+
+/* Estilo KORRATH (Negro, terminal, ciberpunk) */
+#card-korrath {
+  background: #0a0a0a;
+  border: 1px solid #333;
+  border-left: 4px solid var(--korrath-cyan);
+  color: #e8e8e8;
+  font-family: 'Space Mono', monospace;
+  box-shadow: 0 10px 30px rgba(0, 229, 208, 0.1);
+}
+.k-header { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 2px; border-bottom: 1px dashed #333; padding-bottom: 12px; margin-bottom: 16px; }
+.k-title { font-size: 20px; font-weight: 700; color: var(--korrath-cyan); margin-bottom: 12px; }
+.k-text { font-size: 13px; line-height: 1.7; color: #bbb; margin-bottom: 24px; }
+.k-stamp { border: 2px solid var(--korrath-cyan); color: var(--korrath-cyan); padding: 8px; text-align: center; font-weight: 700; font-size: 14px; letter-spacing: 2px; text-transform: uppercase; transform: rotate(-2deg); width: fit-content; margin: 0 auto;}
+
+/* Cargando */
+#loading { color: #fff; font-family: 'Space Mono', monospace; font-size: 14px; animation: parpadeo 1s infinite; }
+@keyframes parpadeo { 50% { opacity: 0.3; } }
+</style>
+</head>
+<body>
+
+  <div id="loading">Leyendo chip NFC... descifrando estado del expediente...</div>
+
+  <!-- TARJETA VESSALIN (Si firmó) -->
+  <div class="id-card" id="card-vessalin">
+    <div class="v-header">
+      <div class="v-logo">
+        <svg viewBox="0 0 200 200" fill="none" stroke="#a4271c" stroke-width="12">
+          <path d="M60,30 C40,45 42,75 65,90 C48,98 40,120 48,145 C55,168 85,175 110,160 L150,40" stroke-linecap="round" stroke-linejoin="round"/>
+          <ellipse cx="75" cy="32" rx="28" ry="9"/>
+        </svg>
+        VESSALIN
+      </div>
+      <div style="font-size: 10px; font-weight: bold; color: #166534;">AUTORIZADO</div>
+    </div>
+    <div class="v-title">FASE II: INICIADA</div>
+    <div class="v-text">
+      Germán, bienvenido al nuevo programa de observación.<br><br>
+      Expediente blindado. Permisos reescritos.<br><br>
+      <i>Sabía que elegirías bien, chavalín. Disfruta de tu regalo y feliz cumpleaños.</i>
+    </div>
+    <div class="v-footer">OBSERVADOR AL MANDO: OSENE-4</div>
+  </div>
+
+  <!-- TARJETA KORRATH (Si denunció el código) -->
+  <div class="id-card" id="card-korrath">
+    <div class="k-header">KORRATH · Oficina de Conformidad<br>Operación de Captura</div>
+    <div class="k-title">PRÓFUGO CAPTURADO</div>
+    <div class="k-text">
+      Gracias a la consignación de su código, el observador renegado <b>OSENE-4</b> ha sido interceptado y puesto a disposición penal.<br><br>
+      Expediente 26-1310 cerrado definitivamente.<br><br>
+      Como agradecimiento por su colaboración, la Oficina le hace entrega de este obsequio. Feliz cumpleaños.
+    </div>
+    <div class="k-stamp">CASO CERRADO</div>
+  </div>
+
+<script>
+  setTimeout(() => {
+    document.getElementById('loading').style.display = 'none';
+    
+    // Leer la memoria del móvil
+    const final = localStorage.getItem('final_german');
+
+    if (final === 'vessalin') {
+      document.getElementById('card-vessalin').style.display = 'block';
+    } else if (final === 'korrath') {
+      document.getElementById('card-korrath').style.display = 'block';
+    } else {
+      // Por si escanea la tarjeta sin haber hecho las webs antes (falla)
+      document.body.innerHTML = '<div style="color:red; font-family:monospace; text-align:center;">ERROR DE LECTURA BIOMÉTRICA.<br>Expediente no resuelto en el sistema.</div>';
+    }
+  }, 2000); // Finge que está procesando durante 2 segundos
+</script>
+</body>
+</html>
